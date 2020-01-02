@@ -1,6 +1,5 @@
 package com.lushihao.model.property.util;
 
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.EmbeddedValueResolverAware;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringValueResolver;
