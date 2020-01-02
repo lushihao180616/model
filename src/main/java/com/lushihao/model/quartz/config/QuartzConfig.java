@@ -1,6 +1,5 @@
 package com.lushihao.model.quartz.config;
 
-import com.lushihao.model.bean.util.LSHBeanUtils;
 import com.lushihao.model.property.util.LSHPropertyUtils;
 import com.lushihao.model.quartz.vo.Job0;
 import org.quartz.*;
