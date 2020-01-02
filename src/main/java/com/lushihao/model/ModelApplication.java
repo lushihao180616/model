@@ -8,8 +8,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @MapperScan("com.lushihao.model.dao")
 public class ModelApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(ModelApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(ModelApplication.class, args);
+    }
 
 }

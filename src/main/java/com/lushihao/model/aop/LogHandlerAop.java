@@ -1,6 +1,6 @@
 package com.lushihao.model.aop;
 
-import com.example.test.annotation.LogHandler;
+import com.lushihao.model.annotation.LogHandler;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Aspect;
@@ -15,7 +15,7 @@ public class LogHandlerAop {
     /**
      * 以自定义 @WebLog 注解为切点
      */
-    @Pointcut("@annotation(com.example.test.annotation.LogHandler)")
+    @Pointcut("@annotation(com.lushihao.model.annotation.LogHandler)")
     public void logHandler() {
     }
 

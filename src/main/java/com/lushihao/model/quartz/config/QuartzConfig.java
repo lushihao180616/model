@@ -1,7 +1,7 @@
 package com.lushihao.model.quartz.config;
 
-import com.example.test.prop.util.LSHPropertyUtils;
-import com.example.test.quartz.vo.Job1;
+import com.lushihao.model.prop.util.LSHPropertyUtils;
+import com.lushihao.model.quartz.vo.Job1;
 import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
