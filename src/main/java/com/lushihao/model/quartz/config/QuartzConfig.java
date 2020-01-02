@@ -1,7 +1,8 @@
 package com.lushihao.model.quartz.config;
 
-import com.lushihao.model.prop.util.LSHPropertyUtils;
-import com.lushihao.model.quartz.vo.Job1;
+import com.lushihao.model.bean.util.LSHBeanUtils;
+import com.lushihao.model.property.util.LSHPropertyUtils;
+import com.lushihao.model.quartz.vo.Job0;
 import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -11,8 +12,22 @@ import java.util.Date;
 
 @Configuration
 public class QuartzConfig {
+    public static final String JOB0 = "job0";
     public static final String JOB1 = "job1";
+    public static final String JOB2 = "job2";
+    public static final String JOB3 = "job3";
+    public static final String JOB4 = "job4";
+    public static final String JOB5 = "job5";
+    public static final String JOB6 = "job6";
+    public static final String JOB7 = "job7";
+    public static final String JOB8 = "job8";
+    public static final String JOB9 = "job9";
+
+    public static final String GROUP0 = "group0";
     public static final String GROUP1 = "group1";
+    public static final String GROUP2 = "group2";
+    public static final String GROUP3 = "group3";
+    public static final String GROUP4 = "group4";
 
     @Autowired
     private LSHPropertyUtils lshPropertyUtils;
@@ -24,6 +39,8 @@ public class QuartzConfig {
 
     /**
      * 开始执行定时任务
+     *
+     * @throws SchedulerException
      */
     public void startJob() throws SchedulerException {
         startJobTask(scheduler);
@@ -34,13 +51,14 @@ public class QuartzConfig {
      * 启动定时任务
      *
      * @param scheduler
+     * @throws SchedulerException
      */
     private void startJobTask(Scheduler scheduler) throws SchedulerException {
         String clareSaveSbbInfoCron = lshPropertyUtils.getPropertiesValue("job1Cron");
 
-        JobDetail jobDetail = JobBuilder.newJob(Job1.class).withIdentity(JOB1, GROUP1).build();
+        JobDetail jobDetail = JobBuilder.newJob(Job0.class).withIdentity(JOB0, GROUP0).build();
         CronScheduleBuilder cronScheduleBuilder = CronScheduleBuilder.cronSchedule(clareSaveSbbInfoCron);
-        CronTrigger cronTrigger = TriggerBuilder.newTrigger().withIdentity(JOB1, GROUP1)
+        CronTrigger cronTrigger = TriggerBuilder.newTrigger().withIdentity(JOB0, GROUP0)
                 .withSchedule(cronScheduleBuilder).build();
         scheduler.scheduleJob(jobDetail, cronTrigger);
     }
@@ -50,6 +68,7 @@ public class QuartzConfig {
      *
      * @param name
      * @param group
+     * @throws SchedulerException
      */
     public String getjobInfo(String name, String group) throws SchedulerException {
         TriggerKey triggerKey = new TriggerKey(name, group);
@@ -116,6 +135,10 @@ public class QuartzConfig {
 
     /**
      * 恢复某个任务
+     *
+     * @param name
+     * @param group
+     * @throws SchedulerException
      */
     public void resumeJob(String name, String group) throws SchedulerException {
         JobKey jobKey = new JobKey(name, group);

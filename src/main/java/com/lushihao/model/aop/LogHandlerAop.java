@@ -13,22 +13,21 @@ import java.lang.reflect.Method;
 @Component
 public class LogHandlerAop {
     /**
-     * 以自定义 @WebLog 注解为切点
+     * 以自定义注解为切点
      */
     @Pointcut("@annotation(com.lushihao.model.annotation.LogHandler)")
     public void logHandler() {
     }
 
+    /**
+     * 抛异常调用方法
+     *
+     * @param joinPoint
+     * @param e
+     * @throws Exception
+     */
     @AfterThrowing(pointcut = "logHandler()", throwing = "e")
     public void doAfterThrowing(JoinPoint joinPoint, Throwable e) throws Exception {
-        getAspectLogDescription(joinPoint);
-    }
-
-    /**
-     * 获取切面注解的描述
-     */
-    public void getAspectLogDescription(JoinPoint joinPoint)
-            throws Exception {
         String targetName = joinPoint.getTarget().getClass().getName();
         String methodName = joinPoint.getSignature().getName();
         Object[] arguments = joinPoint.getArgs();

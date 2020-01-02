@@ -1,6 +1,7 @@
 package com.lushihao.model.redis.util;
 
 import com.alibaba.fastjson.JSONObject;
+import com.lushihao.model.bean.util.LSHBeanUtils;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.RedisCallback;
@@ -15,25 +16,33 @@ import java.util.Set;
 /**
  * 缓存提供类
  */
-public class LSHCacheUtils {
+public class LSHRedisUtils {
     /**
      * 注入对象
      * 由于当前class不在spring boot框架内（不在web项目中）所以无法使用autowired，使用此种方法进行注入
      */
     private static RedisTemplate<String, String> template = (RedisTemplate<String, String>) LSHBeanUtils.getBean("redisTemplate");
     /**
-     * 获取保存到Redis中时的时间
+     * 保存时间7天
      */
-    public static final Integer SAVE_TIME_30D = 60 * 60 * 24 * 30;
+    private static final Long SAVE_TIME_7D = (long) 60 * 60 * 24 * 7;
     /**
-     * 默认时间
+     * 保存时间30天
      */
-    private static int time = 60 * 60 * 24 * 7;
+    public static final Long SAVE_TIME_30D = (long) 60 * 60 * 24 * 30;
+    /**
+     * 保存时间60天
+     */
+    private static final Long SAVE_TIME_60D = (long) 60 * 60 * 24 * 60;
 
-    public static <T> boolean set(String key, T value) {
-        return set(key, JSONObject.toJSONString(value), time);
-    }
-
+    /**
+     * 保存
+     *
+     * @param key       键
+     * @param value     值
+     * @param validTime 保存时间
+     * @return
+     */
     public static boolean set(String key, String value, long validTime) {
         boolean result = template.execute(new RedisCallback<Boolean>() {
             @Override
@@ -47,12 +56,16 @@ public class LSHCacheUtils {
         return result;
     }
 
+    /**
+     * 获取
+     *
+     * @param key   键
+     * @param clazz 类型
+     * @param <T>
+     * @return
+     */
     public static <T> T get(String key, Class<T> clazz) {
-        return JSONObject.parseObject(get(key), clazz);
-    }
-
-    public static String get(String key) {
-        String result = template.execute(new RedisCallback<String>() {
+        String value = template.execute(new RedisCallback<String>() {
             @Override
             public String doInRedis(RedisConnection connection) throws DataAccessException {
                 RedisSerializer<String> serializer = template.getStringSerializer();
@@ -60,20 +73,19 @@ public class LSHCacheUtils {
                 return serializer.deserialize(value);
             }
         });
-        return result;
+        return JSONObject.parseObject(value, clazz);
     }
 
+    /**
+     * 模糊搜索
+     *
+     * @param key   键
+     * @param clazz 类型
+     * @param <T>
+     * @return
+     */
     public static <T> List<T> fuzzyGet(String key, Class<T> clazz) {
-        List<String> values = fuzzyGet(key);
-        List<T> tList = new ArrayList<>();
-        for (String value : values) {
-            tList.add(JSONObject.parseObject(value, clazz));
-        }
-        return tList;
-    }
-
-    public static List<String> fuzzyGet(String key) {
-        List<String> result = template.execute(new RedisCallback<List<String>>() {
+        List<String> values = template.execute(new RedisCallback<List<String>>() {
             @Override
             public List<String> doInRedis(RedisConnection connection) throws DataAccessException {
                 RedisSerializer<String> serializer = template.getStringSerializer();
@@ -96,10 +108,36 @@ public class LSHCacheUtils {
                 return values;
             }
         });
-        return result;
+        List<T> tList = new ArrayList<>();
+        for (String value : values) {
+            tList.add(JSONObject.parseObject(value, clazz));
+        }
+        return tList;
     }
 
+    /**
+     * 删除
+     *
+     * @param key 键
+     * @return
+     */
     public static boolean del(String key) {
         return template.delete(key);
+    }
+
+    /**
+     * 模糊删除
+     *
+     * @param key 键
+     * @return
+     */
+    public static boolean fuzzyDel(String key) {
+        Set<String> keysList = template.keys("*" + key + "*");
+        long successCount = template.delete(keysList);
+        if ((long) keysList.size() == successCount) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

@@ -21,7 +21,7 @@ import java.lang.reflect.Method;
 
 @Configuration
 @EnableCaching //启用缓存
-public class CacheConfig extends CachingConfigurerSupport {
+public class RedisConfig extends CachingConfigurerSupport {
 
     /**
      * 自定义缓存key的生成策略。默认的生成策略是看不懂的(乱码内容) 通过Spring 的依赖注入特性进行自定义的配置注入并且此类是一个配置类可以更多程度的自定义配置
@@ -47,6 +47,9 @@ public class CacheConfig extends CachingConfigurerSupport {
 
     /**
      * 缓存配置管理器
+     *
+     * @param factory
+     * @return
      */
     @Bean
     public CacheManager cacheManager(LettuceConnectionFactory factory) {
@@ -70,6 +73,7 @@ public class CacheConfig extends CachingConfigurerSupport {
     /**
      * 获取缓存操作助手对象
      *
+     * @param factory
      * @return
      */
     @Bean
