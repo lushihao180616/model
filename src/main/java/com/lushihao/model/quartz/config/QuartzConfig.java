@@ -24,9 +24,6 @@ public class QuartzConfig {
 
     public static final String GROUP0 = "group0";
     public static final String GROUP1 = "group1";
-    public static final String GROUP2 = "group2";
-    public static final String GROUP3 = "group3";
-    public static final String GROUP4 = "group4";
 
     @Autowired
     private LSHPropertyUtils lshPropertyUtils;
