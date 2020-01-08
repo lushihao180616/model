@@ -1,0 +1,11 @@
+### Quartz
+# jobClass
+jobClassPath: com.lushihao.model.quartz.vo.
+jobclass:
+  jobList:
+    - name: "Job0"
+      corn: "* * * * * ?"
+      group: "Group0"
+    - name: "Job1"
+      corn: "* * * * * ?"
+      group: "Group1"

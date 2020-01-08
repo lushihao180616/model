@@ -1,45 +1,43 @@
 package com.lushihao.model.quartz.config;
 
 import com.lushihao.model.property.util.LSHPropertyUtils;
-import com.lushihao.model.quartz.vo.Job0;
 import org.quartz.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.Resource;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Configuration
 public class QuartzConfig {
-    public static final String JOB0 = "job0";
-    public static final String JOB1 = "job1";
-    public static final String JOB2 = "job2";
-    public static final String JOB3 = "job3";
-    public static final String JOB4 = "job4";
-    public static final String JOB5 = "job5";
-    public static final String JOB6 = "job6";
-    public static final String JOB7 = "job7";
-    public static final String JOB8 = "job8";
-    public static final String JOB9 = "job9";
-
-    public static final String GROUP0 = "group0";
-    public static final String GROUP1 = "group1";
-
-    @Autowired
-    private LSHPropertyUtils lshPropertyUtils;
     /**
      * 任务调度
      */
     @Resource
     private Scheduler scheduler;
+    /**
+     * 键：job类名，值：group组名
+     */
+    public Map<String, String> job_group = new HashMap<>();
 
     /**
      * 开始执行定时任务
      *
      * @throws SchedulerException
      */
-    public void startJob() throws SchedulerException {
-        startJobTask(scheduler);
+    public void startJob(List<Map<String, String>> list) throws SchedulerException, ClassNotFoundException {
+        String jobClassPath = LSHPropertyUtils.getPropertiesValue("jobClassPath");
+        for (Map<String, String> map : list) {
+            String name = map.get("name");
+            String corn = map.get("corn");
+            String group = map.get("group");
+            Class clazz = Class.forName(jobClassPath + name);
+            startJobTask(scheduler, clazz, name, group, corn);
+
+            job_group.put(name, group);
+        }
         scheduler.start();
     }
 
@@ -49,12 +47,10 @@ public class QuartzConfig {
      * @param scheduler
      * @throws SchedulerException
      */
-    private void startJobTask(Scheduler scheduler) throws SchedulerException {
-        String clareSaveSbbInfoCron = lshPropertyUtils.getPropertiesValue("job1Cron");
-
-        JobDetail jobDetail = JobBuilder.newJob(Job0.class).withIdentity(JOB0, GROUP0).build();
-        CronScheduleBuilder cronScheduleBuilder = CronScheduleBuilder.cronSchedule(clareSaveSbbInfoCron);
-        CronTrigger cronTrigger = TriggerBuilder.newTrigger().withIdentity(JOB0, GROUP0)
+    private void startJobTask(Scheduler scheduler, Class clazz, String job, String group, String cron) throws SchedulerException {
+        JobDetail jobDetail = JobBuilder.newJob(clazz).withIdentity(job, group).build();
+        CronScheduleBuilder cronScheduleBuilder = CronScheduleBuilder.cronSchedule(cron);
+        CronTrigger cronTrigger = TriggerBuilder.newTrigger().withIdentity(job, group)
                 .withSchedule(cronScheduleBuilder).build();
         scheduler.scheduleJob(jobDetail, cronTrigger);
     }
